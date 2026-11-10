@@ -1,0 +1,21 @@
+{
+  "model_size": "small",
+  "device": "cpu",
+  "compute_type": "int8",
+  "total_samples": 1,
+  "overall_wer": 1.2,
+  "overall_mer": 1.0,
+  "overall_wil": 1.0,
+  "details": [
+    {
+      "id": 1,
+      "category": "English - Campus Instruction",
+      "audio_file": "english_id_card.wav",
+      "reference": "Please bring your ID card.",
+      "hypothesis": "प्लीस ब्रेंगेर अडिकाडियर क्रिप्या अपना अडिकाडिया",
+      "wer": 1.2,
+      "detected_language": "hi",
+      "language_probability": 0.5012
+    }
+  ]
+}

@@ -14,6 +14,7 @@ MODEL_MAP = {
     "base": "Systran/faster-whisper-base",
     "small": "Systran/faster-whisper-small",
     "medium": "Systran/faster-whisper-medium",
+    "large-v3": "Systran/faster-whisper-large-v3",
 }
 
 ALLOW_PATTERNS = [
@@ -51,6 +52,6 @@ def download(model_size: str = "small"):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Download faster-whisper model weights")
-    parser.add_argument("--model-size", default="small", choices=["tiny", "base", "small", "medium"])
+    parser.add_argument("--model-size", default="small", choices=["tiny", "base", "small", "medium", "large-v3"])
     args = parser.parse_args()
     download(args.model_size)

@@ -105,7 +105,7 @@ def transcribe_recording(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Direct mic recording & transcription")
     parser.add_argument("--duration", type=int, default=5, help="Recording duration in seconds (default: 5)")
-    parser.add_argument("--model-size", default="small", choices=["tiny", "base", "small", "medium"], help="Whisper model size")
+    parser.add_argument("--model-size", default="small", choices=["tiny", "base", "small", "medium", "large-v3"], help="Whisper model size")
     parser.add_argument("--output", default="backend/test_audio/my_recording.wav", help="Path to save recorded audio")
 
     args = parser.parse_args()
