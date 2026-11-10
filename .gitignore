@@ -1,0 +1,50 @@
+# Environments
+.venv/
+venv/
+backend/venv/
+env/
+ENV/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Audio & test recordings
+*.wav
+*.mp3
+*.webm
+*.ogg
+*.m4a
+!test_audio/samples.md
+
+# Logs & temp
+*.log
+.env
+.env.local
+temp/
+tmp/
+
+# OS / Editor
+.DS_Store
+.vscode/
+.idea/

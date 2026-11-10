@@ -1,0 +1,22 @@
+[
+  {
+    "category": "English - Campus Instruction",
+    "audio_path": "backend/test_audio/english_id_card.wav",
+    "reference_text": "Please bring your ID card."
+  },
+  {
+    "category": "English - Campus Navigation",
+    "audio_path": "backend/test_audio/english_admissions.wav",
+    "reference_text": "The admissions office is on the first floor."
+  },
+  {
+    "category": "Hindi - Campus Instruction",
+    "audio_path": "backend/test_audio/hindi_id_card.wav",
+    "reference_text": "कृपया अपना पहचान पत्र लेकर आइए।"
+  },
+  {
+    "category": "Hinglish - Campus Navigation",
+    "audio_path": "backend/test_audio/hinglish_floor.wav",
+    "reference_text": "Admission office first floor pe hai."
+  }
+]

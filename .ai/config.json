@@ -1,0 +1,9 @@
+{
+  "projectName": "Veyra (SignBridge)",
+  "primaryLanguage": "Python",
+  "framework": "FastAPI",
+  "database": "None (Stateless ASR service)",
+  "deploymentMethod": "Local / Docker",
+  "projectType": "Microservice / AI ASR Engine",
+  "memoryVersion": "1.0.0"
+}
