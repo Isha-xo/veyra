@@ -13,6 +13,9 @@ import sys
 import time
 import argparse
 import subprocess
+
+# Apply PyAV compatibility fix before importing faster_whisper
+import backend.app.core.audio_compat  # noqa: F401
 from faster_whisper import WhisperModel
 
 

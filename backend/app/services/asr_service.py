@@ -1,5 +1,8 @@
 import logging
 from typing import Optional, List, Tuple
+
+# Apply PyAV compatibility fix before importing faster_whisper
+import backend.app.core.audio_compat  # noqa: F401
 from faster_whisper import WhisperModel
 from backend.app.core.config import settings
 from backend.app.schemas.transcription import (

@@ -15,6 +15,9 @@ import json
 import argparse
 from typing import List, Dict, Any
 import jiwer
+
+# Apply PyAV compatibility fix before importing faster_whisper
+import backend.app.core.audio_compat  # noqa: F401
 from faster_whisper import WhisperModel
 
 
