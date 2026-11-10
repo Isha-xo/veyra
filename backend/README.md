@@ -197,12 +197,18 @@ curl -X POST "http://127.0.0.1:8000/transcribe" \
 PYTHONPATH=. backend/venv/bin/pytest backend/tests/test_api.py -v
 ```
 
-### B. Test ASR Directly on an Audio File
+### B. Record Directly from Your Microphone and Transcribe
+```bash
+PYTHONPATH=. backend/venv/bin/python backend/tests/record_and_transcribe.py --duration 5 --model-size small
+```
+* Shows a 3-second countdown, records for 5 seconds from your laptop mic, saves to `backend/test_audio/my_recording.wav`, and immediately transcribes it.
+
+### C. Test ASR Directly on an Existing Audio File
 ```bash
 PYTHONPATH=. backend/venv/bin/python backend/tests/test_asr_standalone.py backend/test_audio/your_audio.wav --model-size small
 ```
 
-### C. Evaluate Word Error Rate (WER) with `jiwer`
+### D. Evaluate Word Error Rate (WER) with `jiwer`
 ```bash
 PYTHONPATH=. backend/venv/bin/python backend/tests/eval_wer.py --manifest backend/tests/eval_samples.json --model-size small
 ```

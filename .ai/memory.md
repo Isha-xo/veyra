@@ -14,11 +14,11 @@ Active Development (Phase 1: Speech-to-Text ASR)
 ## Current Progress
 - Git repository synced (`https://github.com/ShreyasUday/veyra`) ✅
 - Backend virtual environment & dependency management initialized ✅
-- Backend dependency installation (faster-whisper, FastAPI, uvicorn, jiwer) 🚧
-- Modular architecture design (core, api, services, schemas) 🚧
-- Standalone ASR verification & model download ⏳
-- FastAPI endpoints (`/transcribe`, `/health`) & CORS setup ⏳
-- Frontend API contract & documentation ⏳
+- Backend dependencies installed (faster-whisper, FastAPI, uvicorn, jiwer) ✅
+- Modular architecture implemented (core, api, services, schemas) ✅
+- Unit tests implemented and verified (6/6 passing) ✅
+- Live microphone recording & CLI tester (`record_and_transcribe.py`) added ✅
+- Model download & live microphone speech test ⏳
 - Word Error Rate (WER) evaluation benchmark ⏳
 
 ---
