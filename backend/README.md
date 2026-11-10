@@ -138,6 +138,18 @@ PYTHONPATH=. backend/venv/bin/uvicorn backend.app.main:app --host 0.0.0.0 --port
 
 ## 7. Frontend Integration Contract
 
+> [!IMPORTANT]
+> **Connecting Across Two Different Machines (Local Wi-Fi Network):**
+> * If your frontend teammate is running their frontend on **their own laptop**, they cannot reach your server using `localhost:8000`.
+> * Replace `localhost` with the backend machine's local Wi-Fi IP address:
+>   `http://<BACKEND_MACHINE_IP>:8000/transcribe`
+> * **How to find your local IP on Linux / Fedora:**
+>   Run: `hostname -I | awk '{print $1}'` (e.g., `192.168.1.45`).
+> * Because the backend server is launched with `--host 0.0.0.0`, it automatically accepts incoming requests from any machine on the local network.
+> * **Fedora Firewall (if requests time out):**
+>   If your teammate cannot connect, allow port 8000 temporarily:
+>   `sudo firewall-cmd --add-port=8000/tcp`
+
 ### Endpoint Specification
 * **Route:** `POST /transcribe` *(or `POST /api/v1/transcribe`)*
 * **Content-Type:** `multipart/form-data`
