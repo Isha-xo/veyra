@@ -86,7 +86,7 @@ PYTHONPATH=. backend/venv/bin/python backend/tests/download_model.py --model-siz
 **No. Everything works out-of-the-box without touching `.env`.**
 
 All configuration settings have safe, production-grade defaults built into `backend/app/core/config.py`:
-* Default Host: `0.0.0.0`
+* Default Host: `127.0.0.1` (localhost)
 * Default Port: `8000`
 * Default Model: `small`
 * Default Device: `cpu`
@@ -107,7 +107,7 @@ cp backend/.env.example backend/.env
 | `WHISPER_BEAM_SIZE` | `5` | Beam search decoding width (1–10) |
 | `WHISPER_VAD_FILTER` | `true` | Enable Silero Voice Activity Detection |
 | `CORS_ORIGINS` | `*` | Allowed origins (e.g. `http://localhost:3000,http://localhost:5173`) |
-| `HOST` | `0.0.0.0` | Listen host address |
+| `HOST` | `127.0.0.1` | Listen host address (localhost) |
 | `PORT` | `8000` | Listen port |
 
 ---
@@ -127,31 +127,20 @@ pip install -r backend/requirements.txt
 
 ### Step 3: Run the FastAPI Server
 ```bash
-PYTHONPATH=. backend/venv/bin/uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
+PYTHONPATH=. backend/venv/bin/uvicorn backend.app.main:app --reload
 ```
 
-* **Swagger UI:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-* **ReDoc:** [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
-* **Health Endpoint:** [http://127.0.0.1:8000/api/v1/health](http://127.0.0.1:8000/api/v1/health)
+* **Swagger UI:** [http://localhost:8000/docs](http://localhost:8000/docs)
+* **ReDoc:** [http://localhost:8000/redoc](http://localhost:8000/redoc)
+* **Health Check:** [http://localhost:8000/api/v1/health](http://localhost:8000/api/v1/health)
 
 ---
 
 ## 7. Frontend Integration Contract
 
-> [!IMPORTANT]
-> **Connecting Across Two Different Machines (Local Wi-Fi Network):**
-> * If your frontend teammate is running their frontend on **their own laptop**, they cannot reach your server using `localhost:8000`.
-> * Replace `localhost` with the backend machine's local Wi-Fi IP address:
->   `http://<BACKEND_MACHINE_IP>:8000/transcribe`
-> * **How to find your local IP on Linux / Fedora:**
->   Run: `hostname -I | awk '{print $1}'` (e.g., `192.168.1.45`).
-> * Because the backend server is launched with `--host 0.0.0.0`, it automatically accepts incoming requests from any machine on the local network.
-> * **Fedora Firewall (if requests time out):**
->   If your teammate cannot connect, allow port 8000 temporarily:
->   `sudo firewall-cmd --add-port=8000/tcp`
-
 ### Endpoint Specification
-* **Route:** `POST /transcribe` *(or `POST /api/v1/transcribe`)*
+* **URL:** `http://localhost:8000/transcribe`
+* **Method:** `POST`
 * **Content-Type:** `multipart/form-data`
 
 ### Request Parameters

@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     
     # Server configuration
-    HOST: str = "0.0.0.0"
+    HOST: str = "127.0.0.1"
     PORT: int = 8000
     
     # CORS Configuration - frontend integration
