@@ -26,7 +26,8 @@ wer_transform = jiwer.Compose([
     jiwer.ToLowerCase(),
     jiwer.RemovePunctuation(),
     jiwer.RemoveMultipleSpaces(),
-    jiwer.Strip()
+    jiwer.Strip(),
+    jiwer.ReduceToListOfListOfWords()
 ])
 
 
