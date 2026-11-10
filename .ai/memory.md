@@ -18,8 +18,11 @@ Active Development (Phase 1: Speech-to-Text ASR)
 - Modular architecture implemented (core, api, services, schemas) ✅
 - Unit tests implemented and verified (6/6 passing) ✅
 - Live microphone recording & CLI tester (`record_and_transcribe.py`) added ✅
-- Model download & live microphone speech test ⏳
-- Word Error Rate (WER) evaluation benchmark ⏳
+- Model download & live microphone speech test verified ✅
+- FastAPI `/transcribe` endpoint verified via Swagger UI ✅
+- PyAV 19+ compatibility fix implemented ✅
+- Word Error Rate (WER) evaluation benchmark implemented with jiwer 4.x ✅
+- Comprehensive Phase 1 README with model guide, API contract & resume highlights created ✅
 
 ---
 
