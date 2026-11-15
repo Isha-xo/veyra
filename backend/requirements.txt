@@ -7,3 +7,4 @@ pydantic-settings
 jiwer
 pytest
 httpx
+nltk
