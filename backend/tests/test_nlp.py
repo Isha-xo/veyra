@@ -87,3 +87,37 @@ def test_nlp_api_empty_payload():
     """Test 422 or 400 validation on empty payload."""
     response = client.post("/api/v1/nlp/process", json={"text": ""})
     assert response.status_code == 422
+
+
+def test_conversational_words_and_contractions():
+    """Ensure everyday words like 'okay', 'it's okay', 'where's' don't break into fingerspelling."""
+    res_okay = nlp_service.process_text("Okay")
+    assert "OKAY" in res_okay.isl_tokens
+    assert "_SPELL_O" not in res_okay.isl_tokens
+
+    res_its_okay = nlp_service.process_text("It's okay.")
+    assert "OK" in res_its_okay.isl_tokens
+    assert "_SPELL_I" not in res_its_okay.isl_tokens
+    assert "_SPELL_S" not in res_its_okay.isl_tokens
+
+    res_contraction = nlp_service.process_text("Where's the library?")
+    assert "LIBRARY" in res_contraction.isl_tokens
+    assert "WHERE" in res_contraction.isl_tokens
+    assert "_SPELL_S" not in res_contraction.isl_tokens
+
+    res_name = nlp_service.process_text("What's your name?")
+    assert "YOUR" in res_name.isl_tokens
+    assert "NAME" in res_name.isl_tokens
+    assert "WHAT" in res_name.isl_tokens
+    assert "_SPELL_S" not in res_name.isl_tokens
+
+
+def test_hindi_conversational_words():
+    """Test Hindi colloquial words like theek hai, achha, sahi hai."""
+    res_theek = nlp_service.process_text("theek hai")
+    assert "OK" in res_theek.isl_tokens
+    assert "_SPELL_T" not in res_theek.isl_tokens
+
+    res_achha = nlp_service.process_text("achha")
+    assert "GOOD" in res_achha.isl_tokens
+    assert "_SPELL_A" not in res_achha.isl_tokens

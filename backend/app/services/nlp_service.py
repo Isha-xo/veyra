@@ -31,6 +31,44 @@ from backend.app.schemas.nlp import (
 
 logger = logging.getLogger("signbridge.nlp")
 
+# English contraction patterns mapped to expanded forms
+ENGLISH_CONTRACTIONS: Dict[str, str] = {
+    r"\bwhat's\b": "what is",
+    r"\bwhere's\b": "where is",
+    r"\bhow's\b": "how is",
+    r"\bwho's\b": "who is",
+    r"\bwhen's\b": "when is",
+    r"\bwhy's\b": "why is",
+    r"\bit's\b": "it is",
+    r"\bthat's\b": "that is",
+    r"\bi'm\b": "i am",
+    r"\byou're\b": "you are",
+    r"\bwe're\b": "we are",
+    r"\bthey're\b": "they are",
+    r"\bhe's\b": "he is",
+    r"\bshe's\b": "she is",
+    r"\bcan't\b": "can not",
+    r"\bcannot\b": "can not",
+    r"\bdon't\b": "do not",
+    r"\bdoesn't\b": "does not",
+    r"\bdidn't\b": "did not",
+    r"\bwon't\b": "will not",
+    r"\bwouldn't\b": "would not",
+    r"\bshouldn't\b": "should not",
+    r"\bcouldn't\b": "could not",
+    r"\bisn't\b": "is not",
+    r"\baren't\b": "are not",
+    r"\bwasn't\b": "was not",
+    r"\bweren't\b": "were not",
+    r"\bhaven't\b": "have not",
+    r"\bhasn't\b": "has not",
+    r"\bhadn't\b": "had not",
+    r"\blet's\b": "let us",
+}
+
+# Stray single-character noise tokens resulting from stripped apostrophes
+CONTRACTION_ARTIFACTS = {"S", "T", "M", "D", "LL", "VE", "RE"}
+
 
 class NLPService:
     """Natural Language Processing Service for SignBridge.
@@ -53,6 +91,7 @@ class NLPService:
             try:
                 nltk.download("wordnet", quiet=True)
                 nltk.download("punkt", quiet=True)
+                nltk.download("punkt_tab", quiet=True)
                 nltk.download("averaged_perceptron_tagger_eng", quiet=True)
                 nltk.download("stopwords", quiet=True)
             except Exception as e:
@@ -73,22 +112,27 @@ class NLPService:
             return wordnet.NOUN
 
     def _preprocess_text(self, text: str) -> str:
-        """Normalize text and resolve compound words and Hindi/Hinglish aliases."""
+        """Normalize text, expand contractions, and resolve compound words and Hindi/Hinglish aliases."""
         clean = text.lower().strip()
-        # Remove special characters except alphanumeric, spaces, and question mark
+
+        # 1. Expand standard contractions BEFORE stripping punctuation
+        for pattern, replacement in ENGLISH_CONTRACTIONS.items():
+            clean = re.sub(pattern, replacement, clean)
+
+        # 2. Replace known multi-word compounds (longest phrases first)
+        for phrase, replacement in sorted(COMPOUND_WORDS_MAP.items(), key=lambda x: len(x[0]), reverse=True):
+            pattern = r"\b" + re.escape(phrase) + r"\b"
+            clean = re.sub(pattern, replacement, clean)
+
+        # 3. Replace Hindi & Hinglish transliterated phrases (longest phrases first)
+        for phrase, replacement in sorted(HINDI_HINGLISH_ALIASES.items(), key=lambda x: len(x[0]), reverse=True):
+            pattern = r"\b" + re.escape(phrase) + r"\b"
+            clean = re.sub(pattern, replacement, clean)
+
+        # 4. Remove special characters except alphanumeric, spaces, and question mark
         clean = re.sub(r"[^\w\s\?]", " ", clean)
 
-        # Replace known multi-word compounds
-        for phrase, replacement in COMPOUND_WORDS_MAP.items():
-            pattern = r"\b" + re.escape(phrase) + r"\b"
-            clean = re.sub(pattern, replacement, clean)
-
-        # Replace Hindi & Hinglish transliterated phrases
-        for phrase, replacement in HINDI_HINGLISH_ALIASES.items():
-            pattern = r"\b" + re.escape(phrase) + r"\b"
-            clean = re.sub(pattern, replacement, clean)
-
-        # Collapse whitespace
+        # 5. Collapse whitespace
         clean = re.sub(r"\s+", " ", clean).strip()
         return clean
 
@@ -157,15 +201,19 @@ class NLPService:
         others: List[str] = []
 
         WH_WORDS = {"WHERE", "WHAT", "WHEN", "WHY", "HOW", "WHO", "WHICH"}
-        POLITE_WORDS = {"PLEASE", "THANK_YOU", "WELCOME", "HELLO", "SORRY"}
+        POLITE_WORDS = {"PLEASE", "THANK_YOU", "WELCOME", "HELLO", "SORRY", "OK", "OKAY", "GOOD", "YES", "NO"}
 
         for word, tag in tagged_tokens:
             token = word.upper().strip()
-            if not token:
+            if not token or not any(c.isalnum() for c in token):
+                continue
+
+            # Drop stray single-character artifacts from apostrophes (e.g. 's', 't', 'm')
+            if token in CONTRACTION_ARTIFACTS and tag != "NNP":
                 continue
 
             # Check if it's a stopword (unless it's an important question/polite word)
-            if word.lower() in ISL_STOP_WORDS and token not in WH_WORDS:
+            if word.lower() in ISL_STOP_WORDS and token not in WH_WORDS and token not in POLITE_WORDS:
                 continue
 
             # Lemmatize
@@ -177,10 +225,10 @@ class NLPService:
                 politeness.append(token)
             elif lemma in WH_WORDS or token in WH_WORDS:
                 question_words.append(token)
+            elif token in ("YOU", "YOUR", "ME", "I", "WE", "HE", "SHE", "THEY") or tag in ("PRP", "PRP$"):
+                subjects.append(token)
             elif tag.startswith("V"):  # Verb
                 verbs.append(lemma)
-            elif tag in ("PRP", "PRP$"):  # Pronoun (You, Me)
-                subjects.append(lemma)
             elif tag.startswith("N"):  # Noun / Object
                 # Distinguish subject vs object simply
                 if not subjects:
@@ -195,7 +243,14 @@ class NLPService:
         # Assemble in ISL SOV order:
         # [Politeness] -> [Subject] -> [Others / Modifiers] -> [Object] -> [Verb] -> [Question]
         isl_ordered = politeness + subjects + others + objects + verbs + question_words
-        return isl_ordered
+
+        # Remove consecutive duplicate tokens (e.g. YOU YOU HOW -> YOU HOW)
+        deduped: List[str] = []
+        for tok in isl_ordered:
+            if not deduped or deduped[-1] != tok:
+                deduped.append(tok)
+
+        return deduped
 
     def process_text(self, text: str) -> NLPResponse:
         """Full pipeline: processes raw text into ISL grammar and animation sequence."""
