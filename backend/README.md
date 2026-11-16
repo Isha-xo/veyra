@@ -197,6 +197,48 @@ async function transcribeSpeech(audioBlob) {
 
 ---
 
+### Phase 2: NLP Endpoints (Text-to-ISL & Speech-to-ISL)
+
+#### 1. Text-to-ISL Processing
+* **Route:** `POST /api/v1/nlp/process`
+* **Content-Type:** `application/json`
+* **Payload:**
+  ```json
+  {
+    "text": "The admissions office is on the first floor."
+  }
+  ```
+* **Response (`200 OK`):**
+  ```json
+  {
+    "original_text": "The admissions office is on the first floor.",
+    "isl_grammar_text": "ADMISSION OFFICE FIRST FLOOR",
+    "isl_tokens": ["ADMISSION", "OFFICE", "FIRST", "FLOOR"],
+    "animation_sequence": [
+      {"token": "ADMISSION", "type": "word", "asset": "ADMISSION.mp4"},
+      {"token": "OFFICE", "type": "word", "asset": "OFFICE.mp4"},
+      {"token": "FIRST", "type": "word", "asset": "FIRST.mp4"},
+      {"token": "FLOOR", "type": "word", "asset": "FLOOR.mp4"}
+    ],
+    "intent": {
+      "intent": "find_location",
+      "confidence": 0.95,
+      "slots": {
+        "department": "admissions",
+        "floor": "first"
+      }
+    }
+  }
+  ```
+
+#### 2. All-in-One Speech-to-ISL
+* **Route:** `POST /api/v1/nlp/speech-to-isl`
+* **Content-Type:** `multipart/form-data`
+* **Payload:** `file` (Audio recording `.webm`, `.wav`)
+* **Behavior:** Transcribes audio via `faster-whisper` and immediately converts transcript to ISL animation tokens in a single request.
+
+---
+
 ## 8. Testing & Evaluation
 
 ### A. Run Automated Unit Tests

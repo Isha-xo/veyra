@@ -4,9 +4,19 @@ from backend.app.schemas.transcription import (
     TranscriptionResponse,
     HealthResponse
 )
+from backend.app.schemas.nlp import (
+    NLPRequest,
+    NLPResponse,
+    ISLAnimationToken,
+    IntentClassification
+)
 
 __all__ = [
     "TranscriptionSegment",
     "TranscriptionResponse",
     "HealthResponse",
+    "NLPRequest",
+    "NLPResponse",
+    "ISLAnimationToken",
+    "IntentClassification"
 ]
